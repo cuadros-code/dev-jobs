@@ -14,47 +14,25 @@ import PersonIcon from '@material-ui/icons/Person';
 import { useStyles } from './styles';
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../firebase';
+import { Link, useHistory } from 'react-router-dom'
+import styled from 'styled-components'
 
 export const NavBar = () => {
 
   const [user] = useAuthState(auth)
+  const history = useHistory()
 
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null)
 
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleLogOut = () => auth.signOut()
-
-  console.log(user);
-
   const handleMobileMenuClose = () => setMobileMoreAnchorEl(null);
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  }
-
   const handleMobileMenuOpen = (event) => setMobileMoreAnchorEl(event.currentTarget);
 
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
+  const redirectProfile = () => history.push('/profile/dashboard')
 
-      <MenuItem onClick={handleMenuClose}><Avatar src={user?.photoURL} /></MenuItem>
-      <MenuItem onClick={handleMenuClose}>Cerrar Sesion</MenuItem>
-    </Menu>
-  );
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
@@ -70,9 +48,10 @@ export const NavBar = () => {
       {
         user
           ?
-          <>
-
-            <MenuItem>
+          <div>
+            <MenuItem
+              onClick={redirectProfile}
+            >
               <IconButton color="inherit">
                 <Badge color="secondary">
                   <PersonIcon />
@@ -90,7 +69,7 @@ export const NavBar = () => {
               </IconButton>
               <p>Cerrar Sesion</p>
             </MenuItem>
-          </>
+          </div>
           :
           <MenuItem>
             <IconButton color="inherit">
@@ -98,12 +77,11 @@ export const NavBar = () => {
                 <ExitToAppIcon />
               </Badge>
             </IconButton>
-            <p>Iniciar Sesion</p>
+            <LinkSignInButton to="auth/login">
+              <Button onClick={handleLogOut} color="inherit">Iniciar Sesion</Button>
+            </LinkSignInButton>
           </MenuItem>
-
       }
-
-
     </Menu>
   );
 
@@ -112,7 +90,11 @@ export const NavBar = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
-            DevJobs
+            <LinkHome
+              to="/"
+            >
+              DevJobs
+            </LinkHome>
           </Typography>
 
           <div className={classes.grow} />
@@ -121,14 +103,19 @@ export const NavBar = () => {
             {
               user
                 ?
-                <>
-                  <IconButton color="inherit">
+                <div
+                >
+                  <IconButton
+                    onClick={redirectProfile}
+                    color="inherit">
                     <Avatar src={user?.photoURL} />
                   </IconButton>
                   <Button onClick={handleLogOut} color="inherit">Cerrar Sesion</Button>
-                </>
+                </div>
                 :
-                <Button onClick={handleLogOut} color="inherit">Iniciar Sesion</Button>
+                <LinkSignInButton to="auth/login">
+                  <Button color="inherit">Iniciar Sesion</Button>
+                </LinkSignInButton>
             }
           </div>
           <div className={classes.sectionMobile}>
@@ -145,7 +132,18 @@ export const NavBar = () => {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
     </div>
   );
 }
+
+const LinkSignInButton = styled(Link)`
+  text-decoration: none;
+  color: #fff;
+  @media (max-width: 600px){
+  color: #000;
+  }
+`
+const LinkHome = styled(Link)`
+  text-decoration: none;
+  color: #fff;
+`

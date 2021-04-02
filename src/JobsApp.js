@@ -1,14 +1,12 @@
 import React from 'react'
-import Login from './pages/Login'
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import { theme } from './theme';
-import { NavBar } from './components/NavBar'
+import { AppRouter } from './routes/AppRouter';
 
 const JobsApp = () => {
   return (
     <MuiThemeProvider theme={theme}>
-      <NavBar />
-      <Login />
+      <AppRouter />
     </MuiThemeProvider>
   )
 }
